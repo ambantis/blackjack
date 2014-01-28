@@ -66,4 +66,9 @@ object Deck {
     private def cards = numberCards ++ faceCards
     def shuffle: List[Card] = cards
   }
+
+  def apply(n: Int): Deck = new Deck with DeckBuilder {
+    private def cards = (1 to n).toList.flatMap(x => (numberCards ++ faceCards))
+    def shuffle: List[Card] = cards
+  }
 }
