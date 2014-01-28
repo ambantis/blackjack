@@ -29,7 +29,13 @@ sealed abstract class Card extends Ordered[Card] {
 
 case class NumberCard(value: Int, suit: Suit) extends Card
 
-case class FaceCard(face: Face, suit: Suit) extends Card {
+abstract class FaceCard extends Card {
+  def face: Face
+  def suit: Suit
+  def value: Int
+}
+
+case class FaceCardStd(face: Face, suit: Suit) extends FaceCard {
   import Face._
   def value = face match {
     case Jack  => 11
@@ -38,6 +44,14 @@ case class FaceCard(face: Face, suit: Suit) extends Card {
     case Ace   => 14
   }
   override def toString = s"$face of $suit"
+}
+
+case class FaceCardBJ(face: Face, suit: Suit) extends FaceCard {
+  import Face._
+  override def value = face match {
+    case Ace => 11
+    case _   => 10
+  }
 }
 
 trait DeckBuilder {
@@ -50,11 +64,17 @@ trait DeckBuilder {
       s <- suits
     } yield NumberCard(n, s)
 
-  val faceCards =
+  val faceCardsStd: List[FaceCard] =
     for {
-      f: Face <- faces
+      f <- faces
       s <- suits
-    } yield FaceCard(f, s)
+    } yield FaceCardStd(f, s)
+
+  val faceCardsBJ: List[FaceCard] =
+    for {
+      f <- faces
+      s <- suits
+    } yield FaceCardBJ(f, s)
 }
 
 abstract class Deck {
@@ -63,12 +83,25 @@ abstract class Deck {
 
 object Deck {
   def apply(): Deck = new Deck with DeckBuilder {
-    private def cards = numberCards ++ faceCards
+    private def cards = numberCards ++ faceCardsStd
     def shuffle: List[Card] = cards
   }
 
   def apply(n: Int): Deck = new Deck with DeckBuilder {
-    private def cards = (1 to n).toList.flatMap(x => (numberCards ++ faceCards))
+    private def cards = (1 to n).toList.flatMap(x => (numberCards ++ faceCardsStd))
     def shuffle: List[Card] = cards
   }
+}
+
+object BlackJackDeck {
+  def apply(): Deck = new Deck with DeckBuilder {
+    private def cards = numberCards ++ faceCardsBJ
+    def shuffle: List[Card] = cards
+  }
+
+  def apply(n: Int): Deck = new Deck with DeckBuilder {
+    private def cards = (1 to n).toList.flatMap(x => (numberCards ++ faceCardsBJ))
+    def shuffle: List[Card] = cards
+  }
+
 }
