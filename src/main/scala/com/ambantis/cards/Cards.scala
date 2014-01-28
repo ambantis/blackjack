@@ -2,10 +2,10 @@ package com.ambantis.cards
 
 sealed abstract class Suit
 object Suit {
-  case object Diamonds
-  case object Hearts
-  case object Clubs
-  case object Spades
+  case object Diamonds extends Suit
+  case object Hearts extends Suit
+  case object Clubs extends Suit
+  case object Spades extends Suit
   val suits = List(Diamonds, Hearts, Clubs, Spades)
 }
 
@@ -40,12 +40,30 @@ case class FaceCard(face: Face, suit: Suit) extends Card {
   override def toString = s"$face of $suit"
 }
 
+trait DeckBuilder {
+  import Face._
+  import Suit._
+
+  val numberCards =
+    for {
+      n <- (2 to 10).toList
+      s <- suits
+    } yield NumberCard(n, s)
+
+  val faceCards =
+    for {
+      f: Face <- faces
+      s <- suits
+    } yield FaceCard(f, s)
+}
+
 abstract class Deck {
   def shuffle: List[Card]
 }
 
 object Deck {
-  def apply(): Deck = new Deck {
-    def shuffle: List[Card] = List()
+  def apply(): Deck = new Deck with DeckBuilder {
+    private def cards = numberCards ++ faceCards
+    def shuffle: List[Card] = cards
   }
 }
