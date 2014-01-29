@@ -25,13 +25,13 @@ class DeckSpec extends FunSpec with Matchers with BeforeAndAfter {
   }
 
   describe("four decks of playing standard playing cards mixed together") {
-    it("should have 52*4 stdCards") {
+    it("should have 52*4=208 cards") {
       stdCards4 should have length (4*52)
     }
   }
 
-  describe("A single deck of standard playing stdCards") {
-    it("should have 52 stdCards") {
+  describe("A single deck of standard playing cards") {
+    it("should have 52 cards") {
       stdCards should have length (52)
     }
 
