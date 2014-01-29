@@ -9,7 +9,10 @@ object Suit {
   val suits = List(Diamonds, Hearts, Clubs, Spades)
 }
 
-sealed abstract class Face
+sealed abstract class Face {
+  def value: Int
+}
+
 object Face {
   case object Jack extends Face { val value = 11; override def toString = "Jack" }
   case object Queen extends Face { val value = 12; override def toString = "Queen" }
@@ -36,13 +39,7 @@ abstract class FaceCard extends Card {
 }
 
 case class FaceCardStd(face: Face, suit: Suit) extends FaceCard {
-  import Face._
-  def value = face match {
-    case Jack  => 11
-    case Queen => 12
-    case King  => 13
-    case Ace   => 14
-  }
+  def value = face.value
   override def toString = s"$face of $suit"
 }
 
