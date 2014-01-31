@@ -19,8 +19,8 @@ class DeckSpec extends FunSpec with Matchers with BeforeAndAfter {
   }
 
   describe("a blackjack deck") {
-    it("should have a combined value of 380") {
-      bjCards.map(_.value).sum should be (380)
+    it("should have a combined value of 340 (aces = 1)") {
+      bjCards.map(_.value).sum should be (340)
     }
   }
 

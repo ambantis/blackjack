@@ -54,7 +54,7 @@ case class FaceCardStd(face: Face, suit: Suit) extends FaceCard {
 case class FaceCardBJ(face: Face, suit: Suit) extends FaceCard {
   import Face._
   override def value = face match {
-    case Ace => 11
+    case Ace => 1
     case _   => 10
   }
 }
