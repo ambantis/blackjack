@@ -98,7 +98,7 @@ object Deck {
   }
 
   def apply(n: Int): Deck = new Deck with DeckBuilder {
-    private def cards = (1 to n).toList.flatMap(x => (numberCards ++ faceCardsStd))
+    private def cards = (1 to n).toList.flatMap(x => numberCards ++ faceCardsStd)
     def shuffle: List[Card] = cards
   }
 }
@@ -110,7 +110,7 @@ object BlackJackDeck {
   }
 
   def apply(n: Int): Deck = new Deck with DeckBuilder with Shuffler {
-    private def cards = (1 to n).toList.flatMap(x => (numberCards ++ faceCardsBJ))
+    private def cards = (1 to n).toList.flatMap(x => numberCards ++ faceCardsBJ)
     def shuffle: List[Card] = shuffleCards(cards)
   }
 
