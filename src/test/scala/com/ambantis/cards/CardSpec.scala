@@ -1,10 +1,8 @@
 package com.ambantis.cards
 
-
-
 import org.scalatest._
 
-class DeckSpec extends FunSpec with Matchers with BeforeAndAfter {
+class CardSpec extends FunSpec with Matchers with BeforeAndAfter {
 
   var stdCards: List[Card] = _
   var stdCards4: List[Card] = _
