@@ -12,6 +12,4 @@ class Boot extends App {
 
   implicit val system = ActorSystem("BlackJack")
 
-
-
 }
