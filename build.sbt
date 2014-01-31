@@ -17,7 +17,9 @@ scalacOptions ++= Seq(
 resolvers += "Typesafe Repo" at "http://repo.typesafe.com/typesafe/releases"
 
 libraryDependencies ++= Seq(
-  "org.scalatest" %% "scalatest" % "2.0" % "test"
+  "org.scalatest" %% "scalatest" % "2.0" % "test",
+  "com.typesafe.akka" %% "akka-actor" % "2.2.3",
+  "com.typesafe.akka" %% "akka-testkit" % "2.2.3"
 )
 
 parallelExecution in Test := false
@@ -31,7 +33,3 @@ makeVersionProperties := {
   IO.write(propFile, content)
   Seq(propFile)
 }
-
-ideaExcludeFolders ++= Seq(
-  ".idea", ".idea_"
-)
