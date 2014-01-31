@@ -1,6 +1,12 @@
 name := "blackjack"
 
-version := "0.1-SNAPSHOT"
+val gitHeadCommitSha = settingKey[String] {
+  "Determines the current git commit SHA"
+}
+
+gitHeadCommitSha := Process("git rev-parse HEAD").lines.head
+
+version := s"1.0-${gitHeadCommitSha.value}"
 
 scalaVersion := "2.10.3"
 
@@ -15,3 +21,17 @@ libraryDependencies ++= Seq(
 )
 
 parallelExecution in Test := false
+
+
+val makeVersionProperties = taskKey[Seq[File]]("Makes a version.properties file.")
+
+makeVersionProperties := {
+  val propFile = (resourceManaged in Compile).value / "version.properties"
+  val content = "version=%s" format (gitHeadCommitSha.value)
+  IO.write(propFile, content)
+  Seq(propFile)
+}
+
+ideaExcludeFolders ++= Seq(
+  ".idea", ".idea_"
+)

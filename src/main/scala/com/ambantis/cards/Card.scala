@@ -22,8 +22,16 @@ object Face {
 }
 
 sealed abstract class Card extends Ordered[Card] {
+  import Face._
   def value: Int
   def suit: Suit
+  def isAce: Boolean = this match {
+    case _ : NumberCard   => false
+    case fc: FaceCard => fc.face match {
+      case Ace => true
+      case _   => false
+    }
+  }
   def compare(that: Card): Int = this.value - that.value
   def equals(that: Card): Boolean = compare(that) == 0
   override def hashCode = 42 * value.hashCode
