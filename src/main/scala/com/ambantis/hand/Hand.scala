@@ -8,9 +8,12 @@ import com.ambantis.cards.Card
  * Date: 1/30/14
  * Time: 5:13 PM
  */
-case class Hand(card: Card*) {
-  val _cards = List(card: _*)
-  def points: Int = {
+case class Hand(cards: Card*) {
+  private val _cards = List(cards: _*)
+  def size: Int = _cards.length
+  def hasAce: Boolean = _cards.exists(_.isAce)
+  def softTotal: Int = _cards.map(_.value).sum
+  def hardTotal: Int = {
     var numAces: Int = _cards.count(_.isAce)
     var result = _cards.map(_.value).sum
     while (numAces > 0 && result + 10 < 22) {
@@ -19,5 +22,5 @@ case class Hand(card: Card*) {
     }
     result
   }
-  def isBust: Boolean = points > 21
+  def isBust: Boolean = hardTotal > 21
 }

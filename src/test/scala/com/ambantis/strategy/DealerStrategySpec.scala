@@ -4,7 +4,7 @@ import com.ambantis.cards.BlackJackDeck
 import com.ambantis.strategy.PlayAction._
 
 import org.scalatest._
-import Inspectors._
+import org.scalatest.Inspectors._
 import com.ambantis.hand.Hand
 
 /**
@@ -21,7 +21,7 @@ class DealerStrategySpec extends FunSpec with Matchers with DealerStrategy {
         for {
           a <- BlackJackDeck().shuffle
           b <- BlackJackDeck().shuffle
-          hand = Hand(a,b) if hand.points < 17
+          hand = Hand(a,b) if hand.hardTotal < 17
         } yield hand
       forAll (lowHands) { hand => move(hand) should be (Hit) }
     }
@@ -31,7 +31,7 @@ class DealerStrategySpec extends FunSpec with Matchers with DealerStrategy {
         for {
           a <- BlackJackDeck().shuffle
           b <- BlackJackDeck().shuffle
-          hand = Hand(a,b) if hand.points > 16
+          hand = Hand(a,b) if hand.hardTotal > 16
         } yield hand
       forAll(highHands) { hand => move(hand) should be (Stand) }
     }
