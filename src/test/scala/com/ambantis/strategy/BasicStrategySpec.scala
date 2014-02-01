@@ -15,7 +15,7 @@ import org.scalatest.Inspectors._
  * Date: 1/30/14
  * Time: 4:40 PM
  */
-class BasicStrategySpec extends FunSpec with BeforeAndAfter with BasicStrategy with Matchers {
+class BasicStrategySpec extends FunSpec with BeforeAndAfter with Matchers {
 
   var ace: Card = _
   var two: Card = _
@@ -28,6 +28,7 @@ class BasicStrategySpec extends FunSpec with BeforeAndAfter with BasicStrategy w
   var nine: Card = _
   var ten: Card = _
   var handCombos: List[Hand] = _
+  var strategy: PlayerStrategy = _
 
 
   before {
@@ -47,6 +48,9 @@ class BasicStrategySpec extends FunSpec with BeforeAndAfter with BasicStrategy w
         a <- BlackJackDeck().shuffle
         b <- BlackJackDeck().shuffle
       } yield Hand(a,b)
+
+    strategy = new BasicStrategy
+
   }
 
   describe("A Play Basic Strategy") {
@@ -56,7 +60,7 @@ class BasicStrategySpec extends FunSpec with BeforeAndAfter with BasicStrategy w
         val faceUps = List(two, seven, eight)
         forAll(hands) { hand =>
           forAll(faceUps) { faceUp =>
-            move(hand)(faceUp) should be (Hit) }
+            strategy.move(hand)(faceUp) should be (Hit) }
         }
       }
       it("should stand with a soft total over 7 if dealer has a 2, 7-8") {
@@ -64,7 +68,7 @@ class BasicStrategySpec extends FunSpec with BeforeAndAfter with BasicStrategy w
         val faceUps = List(two, seven, eight)
         forAll(hands) { hand =>
           forAll(faceUps) { faceUp =>
-            move(hand)(faceUp) should be (Stand) }
+            strategy.move(hand)(faceUp) should be (Stand) }
         }
       }
       it("should hit for a soft total under 9 if dealer has 3-6, 8-10,Ace") {
@@ -72,7 +76,7 @@ class BasicStrategySpec extends FunSpec with BeforeAndAfter with BasicStrategy w
         val faceUps = List(three, four, nine, ten, ace)
         forAll(hands) { hand =>
           forAll(faceUps) { faceUp =>
-            move(hand)(faceUp) should be (Hit)
+            strategy.move(hand)(faceUp) should be (Hit)
           }
         }
       }
@@ -81,7 +85,7 @@ class BasicStrategySpec extends FunSpec with BeforeAndAfter with BasicStrategy w
         val faceUps = List(three, four, nine, ten, ace)
         forAll(hands) { hand =>
           forAll(faceUps) { faceUp =>
-            move(hand)(faceUp) should be (Stand)
+            strategy.move(hand)(faceUp) should be (Stand)
           }
         }
       }

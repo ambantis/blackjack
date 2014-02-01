@@ -86,15 +86,17 @@ abstract class Deck {
   def shuffle: List[Card]
 }
 
+abstract class BlackJackDeck extends Deck
+
 trait Shuffler {
   def shuffleCards(cards: List[Card]): List[Card] =
     cards.zipWithIndex.map(x => (x._1, math.random)).sortBy(_._2).map(_._1)
 }
 
 object Deck {
-  def apply(): Deck = new Deck with DeckBuilder {
+  def apply(): Deck = new Deck with DeckBuilder with Shuffler {
     private def cards = numberCards ++ faceCardsStd
-    def shuffle: List[Card] = cards
+    def shuffle: List[Card] = shuffleCards(cards)
   }
 
   def apply(n: Int): Deck = new Deck with DeckBuilder {

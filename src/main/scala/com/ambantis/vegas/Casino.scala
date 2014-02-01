@@ -1,6 +1,9 @@
 package com.ambantis.vegas
 
 import akka.actor.{Props, Actor}
+import com.ambantis.strategy.BasicStrategy
+import com.ambantis.vegas.Casino.LetsPlay
+import com.ambantis.vegas.Dealer.BeginGame
 
 /**
  * Casino
@@ -10,9 +13,17 @@ import akka.actor.{Props, Actor}
  */
 class Casino(name: String) extends Actor {
 
-  override def receive: Actor.Receive = ???
+  val bart = context.actorOf(Player.props("Bart", BasicStrategy, 1000))
+  val dealer = context.actorOf(Dealer.props("Jimmy", 1, 10, bart))
+
+
+  override def receive: Actor.Receive = {
+    case LetsPlay =>
+      dealer ! BeginGame
+  }
 }
 
 object Casino {
   def props(name: String): Props = Props(classOf[Casino], name)
+  object LetsPlay
 }
