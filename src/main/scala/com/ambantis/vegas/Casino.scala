@@ -1,9 +1,8 @@
 package com.ambantis.vegas
 
-import akka.actor.{ActorRef, Props, Actor}
+import akka.actor.{PoisonPill, ActorRef, Props, Actor}
 import com.ambantis.strategy.BasicStrategy
-import com.ambantis.vegas.Casino.LetsPlay
-import com.ambantis.vegas.Dealer.BeginGame
+import com.ambantis.vegas.Dealer.{DealerDone, BeginGame}
 import com.ambantis.vegas.Reaper.WatchMe
 
 /**
@@ -13,21 +12,32 @@ import com.ambantis.vegas.Reaper.WatchMe
  * Time: 8:29 PM
  */
 class Casino(name: String, reaper: ActorRef) extends Actor {
+  import Casino._
 
+  val homer = context.actorOf(Player.props("Homer", BasicStrategy, 1000))
+  val marge = context.actorOf(Player.props("Marge", BasicStrategy, 1000))
+  val lisa = context.actorOf(Player.props("Lisa", BasicStrategy, 1000))
   val bart = context.actorOf(Player.props("Bart", BasicStrategy, 1000))
-  val dealer = context.actorOf(Dealer.props("Jimmy", 1, 10, bart))
+  val players = List(homer, marge, lisa, bart)
+
+  val dealer = context.actorOf(Dealer.props("Jimmy", 6, 1000, players))
 
 
   override def receive: Actor.Receive = {
-    case LetsPlay =>
+    case OpenForBusiness =>
       reaper ! WatchMe(self)
-      reaper ! WatchMe(bart)
+      players foreach(reaper ! WatchMe(_))
       reaper ! WatchMe(dealer)
-      dealer ! BeginGame
+      dealer ! GetToWork
+
+    case DealerDone =>
+      self ! PoisonPill
   }
 }
 
 object Casino {
   def props(name: String, reaper: ActorRef): Props = Props(classOf[Casino], name, reaper)
-  object LetsPlay
+  object OpenForBusiness
+  object GetToWork
+
 }

@@ -9,7 +9,7 @@ import com.ambantis.vegas.Player.PlayAction._
 //
 //object PlayAction {
 //  case object Hit extends PlayAction
-//  case object Stand extends PlayAction
+//  case class Score(hand) extends PlayAction
 //  case object DoubleDown extends PlayAction
 //  case object Split extends PlayAction
 //  case object Surrender extends PlayAction
@@ -25,7 +25,7 @@ class DealerStrategyStd extends DealerStrategy {
 }
 
 sealed abstract class PlayerStrategy {
-  def move(hand: Hand)(faceUp: Card): PlayAction
+  def move(hand: Hand, name: String)(faceUp: Card): PlayAction
 }
 
 object BasicStrategy extends PlayerStrategy {
@@ -36,13 +36,13 @@ object BasicStrategy extends PlayerStrategy {
     2 -> 7, 3 -> 8, 4 -> 8, 5 -> 8, 6 -> 8, 7 -> 7, 8 -> 7, 9 -> 8, 10 -> 8
   )
 
-  def move(hand: Hand)(faceUp: Card): PlayAction = {
+  def move(hand: Hand, name: String)(faceUp: Card): PlayAction = {
     if (hand.size == 2 && hand.hasAce) {
       val soft = if (faceUp.isAce) 8 else softCeiling.getOrElse(faceUp.value, 0)
-      if (hand.softTotal > soft) Stand else Hit
+      if (hand.softTotal > soft) Score(hand, name) else Hit
     } else {
       val hard = if (faceUp.isAce) 15 else hardCeiling.getOrElse(faceUp.value, 0)
-      if (hand.hardTotal > hard) Stand else Hit
+      if (hand.hardTotal > hard) Score(hand, name) else Hit
     }
   }
 }

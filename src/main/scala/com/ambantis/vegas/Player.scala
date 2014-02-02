@@ -20,12 +20,15 @@ class Player(name: String, s: PlayerStrategy, cash: Int) extends Actor {
   var faceUp: Card = _
   var bet: Int = _
 
-  override def receive: Actor.Receive = {
+  override def receive: Receive = {
 
     case DealerIsReady =>
-      if (wallet < 0) self ! PoisonPill
-      else {
-        bet = calcBetAmt
+      bet = calcBetAmt
+      if (wallet < bet) {
+        println(s"$name is am out of money!, so long")
+        sender ! SoLong
+        self ! PoisonPill
+      } else {
         println(s"$name says, 'I bet $bet'")
         wallet -= bet
         sender ! Bet(bet)
@@ -34,26 +37,33 @@ class Player(name: String, s: PlayerStrategy, cash: Int) extends Actor {
     case DealTwo(cards, dealerCard) =>
       faceUp = dealerCard
       hand = Hand(cards: _*)
-      println(s"Humh, dealer has a $faceUp and my hand is $hand")
-      if (hand.isBlackJack) sender ! hand
-      else sender ! s.move(hand)(faceUp)
+      println(s"Humh, dealer has a $faceUp and $name's hand is $hand")
+      if (hand.isBlackJack) sender ! Score(hand, name)
+      else sender ! s.move(hand, name)(faceUp)
 
     case DealOne(card) =>
-      println(s"just received a $card")
+      println(s"$name just received a $card")
       hand = hand + card
-      println(s"Humh, dealer has a $faceUp and my hand is $hand")
-      if (hand.isBust) sender ! hand
-      else sender ! s.move(hand)(faceUp)
+      println(s"Humh, dealer has a $faceUp and $name's is $hand")
+      if (hand.isBust) sender ! Score(hand, name)
+      else sender ! s.move(hand, name)(faceUp)
 
     case ShowMeYourCards =>
       sender ! hand
 
     case YouWon(amt) =>
       wallet += amt
-      println(s"Wow, I won, now I have $$$wallet")
+      println(s"Wow, $name won, now I have $$$wallet")
+
+    case Tie(amt) =>
+      wallet += amt
+      println(s"Oh well, $name tied and now has $$$wallet")
 
     case YouLost =>
-      println(s"Sucks, I lost, now I have $$$wallet")
+      println(s"Sucks, $name lost, now I have $$$wallet")
+
+    case FinalTally =>
+      println(s"\t$name ended with $wallet")
   }
 
   def calcBetAmt: Int = 25
@@ -63,15 +73,16 @@ class Player(name: String, s: PlayerStrategy, cash: Int) extends Actor {
 object Player {
   sealed class PlayAction
   object PlayAction {
-    case class Blackjack(hand: Hand)
-    case object Bust
     case object Play extends PlayAction
     case object Hit extends PlayAction
     case object Stand extends PlayAction
     case object DoubleDown extends PlayAction
     case object Split extends PlayAction
     case object Surrender extends PlayAction
+    case class Score(hand: Hand, name: String) extends PlayAction
+    case object SoLong
     case class Bet(amt: Int) extends PlayAction
+    case object FinalTally
   }
 
   def props(name: String,

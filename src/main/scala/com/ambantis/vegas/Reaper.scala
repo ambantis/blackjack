@@ -35,7 +35,11 @@ abstract class Reaper extends Actor {
   }
 }
 
-class ProductionReaper extends Reaper {
+class ProductionReaper(name: String) extends Reaper {
   // shutdown
   def allSoulsReaped(): Unit = context.system.shutdown()
+}
+
+object ProductionReaper {
+  def props(name: String): Props = Props(classOf[ProductionReaper], name)
 }

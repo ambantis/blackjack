@@ -57,6 +57,7 @@ case class FaceCardBJ(face: Face, suit: Suit) extends FaceCard {
     case Ace => 1
     case _   => 10
   }
+  override def toString = s"$face of $suit"
 }
 
 trait DeckBuilder {
