@@ -1,9 +1,10 @@
 package com.ambantis.vegas
 
-import akka.actor.{Props, Actor}
+import akka.actor.{ActorRef, Props, Actor}
 import com.ambantis.strategy.BasicStrategy
 import com.ambantis.vegas.Casino.LetsPlay
 import com.ambantis.vegas.Dealer.BeginGame
+import com.ambantis.vegas.Reaper.WatchMe
 
 /**
  * Casino
@@ -11,7 +12,7 @@ import com.ambantis.vegas.Dealer.BeginGame
  * Date: 1/30/14
  * Time: 8:29 PM
  */
-class Casino(name: String) extends Actor {
+class Casino(name: String, reaper: ActorRef) extends Actor {
 
   val bart = context.actorOf(Player.props("Bart", BasicStrategy, 1000))
   val dealer = context.actorOf(Dealer.props("Jimmy", 1, 10, bart))
@@ -19,11 +20,14 @@ class Casino(name: String) extends Actor {
 
   override def receive: Actor.Receive = {
     case LetsPlay =>
+      reaper ! WatchMe(self)
+      reaper ! WatchMe(bart)
+      reaper ! WatchMe(dealer)
       dealer ! BeginGame
   }
 }
 
 object Casino {
-  def props(name: String): Props = Props(classOf[Casino], name)
+  def props(name: String, reaper: ActorRef): Props = Props(classOf[Casino], name, reaper)
   object LetsPlay
 }

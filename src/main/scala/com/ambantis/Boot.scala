@@ -1,7 +1,7 @@
 package com.ambantis
 
 import akka.actor.{Props, ActorSystem}
-import com.ambantis.vegas.Casino
+import com.ambantis.vegas.{Reaper, Casino}
 import com.ambantis.vegas.Casino.LetsPlay
 
 /**
@@ -14,7 +14,9 @@ object Boot extends App {
 
   implicit val system = ActorSystem("BlackJack")
 
-  val casino = system.actorOf(Casino.props("Sands"))
+  val reaper = system.actorOf(Reaper.props)
+  val casino = system.actorOf(Casino.props("Sands", reaper))
+
 
   casino ! LetsPlay
 }

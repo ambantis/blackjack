@@ -53,7 +53,7 @@ class Player(name: String, s: PlayerStrategy, cash: Int) extends Actor {
       println(s"Wow, I won, now I have $$$wallet")
 
     case YouLost =>
-      println(s"Sucks, I lost")
+      println(s"Sucks, I lost, now I have $$$wallet")
   }
 
   def calcBetAmt: Int = 25

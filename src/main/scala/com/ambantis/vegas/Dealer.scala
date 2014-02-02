@@ -73,8 +73,7 @@ class Dealer(name: String, numDecks: Int, numRounds: Int, player: ActorRef) exte
 
     case BeginGame =>
       if (rounds < 1) {
-        player ! PoisonPill
-        self ! PoisonPill
+        context.parent ! PoisonPill
         context.system.shutdown()
       } else {
         println("the dealer is ready")
